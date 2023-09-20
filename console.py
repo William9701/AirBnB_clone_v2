@@ -74,7 +74,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] == '{' and pline[-1] =='}'\
+                    if pline[0] == '{' and pline[-1] == '}' \
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -115,27 +115,37 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        #NOTE: We first split the args which will be in a array
-        argList = self.split(args) 
+        # NOTE: We first split the args which will be in a array
+        argList = self.split(args)
+        className = argList[0]
         """ Create an object of any class"""
-        #NOTE: THese are extra checks for the first one
-        if not args or argList[0] == "" or argList is None:
+        # NOTE: THese are extra checks for the first one
+        if not args or className == "" or argList is None:
             print("** class name missing **")
             return
-        elif argList[0] not in HBNBCommand.classes:
+        elif className not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[argList[0]]()
+        new_instance = HBNBCommand.classes[className]()
         """
         #NOTE: At this point "first_name='John'" is an array
         so we split it again this time with a '='
         From there we know the commandList[0] is the class attribute
         Then commandList[1] is the value we want
         """
+        argList.pop(0)
+        for items in argList:
+            listItems = items.split('=')
+            if not setattr(new_instance, listItems[0], listItems[1]):
+                print("** attribute doesn't exist **")
+                return
+
+            setattr(new_instance, listItems[0], listItems[1])
+
         commandList = argList[1].split('=')
-        #NOTE: Just prints the array list
+        # NOTE: Just prints the array list
         print(commandList)
-        #NOTE: Works if used directly but we have dynamic values so
+        # NOTE: Works if used directly but we have dynamic values so
         # We cant use this
         # new_instance.first_name = commandList[1]
         """
@@ -146,12 +156,12 @@ class HBNBCommand(cmd.Cmd):
         user = User()
         setattr(user, first_name, "Mike")
         """
-        #NOTE: This could be the idea for our dynamic values
-        setattr(new_instance, commandList[0], commandList[1])
+        # NOTE: This could be the idea for our dynamic values
+        # setattr(new_instance, commandList[0], commandList[1])
         print(new_instance)
-        storage.save()
+        # storage.save()
         print(new_instance.id)
-        storage.save()
+        # storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -349,7 +359,8 @@ class HBNBCommand(cmd.Cmd):
 
     @staticmethod
     def split(line):
-              return split(line)
+        return split(line)
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
