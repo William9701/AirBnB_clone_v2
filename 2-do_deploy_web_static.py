@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""This module handles packing up and distribution"""
+""" This module handles packing up and distribution"""
 
 import os
 from fabric.api import local, put, env, run, task
@@ -73,3 +73,8 @@ def do_deploy(archive_path):
     except Exception as e:
         june = str(e)
         return False
+
+
+if __name__ == "__main__":
+    # if called then execte
+    do_deploy()

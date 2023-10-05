@@ -67,7 +67,7 @@ def do_deploy(archive_path):
         # /data/web_static/releases/<archive filename without extension>)
         run(f'ln -s /data/web_static/releases/{name}/ /data/web_static'
             f'/current')
-
+        print('New version deployed!')
         return True
     except Exception as e:
         june = str(e)
@@ -82,3 +82,8 @@ def deploy():
         return False
     value = do_deploy(archive)
     return value
+
+
+if __name__ == "__main__":
+    # if called then execute
+    deploy()
