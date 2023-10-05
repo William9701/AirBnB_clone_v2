@@ -3,8 +3,30 @@
 
 import os
 from fabric.api import local, put, env, run
+from datetime import datetime
+import tarfile
 
 env.hosts = ['52.86.222.148', '3.85.41.223']
+
+
+def do_pack():
+    """ method handles the packing up file"""
+    name = (f"web_static_{datetime.now().year}{datetime.now().month}"
+            f"{datetime.now().day}{datetime.now().hour}{datetime.now().minute}"
+            f"{datetime.now().second}")
+    M_name = f"{name}.tgz"
+    F_name = f"versions/{M_name}"
+
+    if not os.path.exists("versions"):
+        os.makedirs("versions")
+
+    with tarfile.open(F_name, 'w:gz') as archive:
+        archive.add('web_static')
+
+    if os.path.exists(F_name):
+        return F_name
+    else:
+        return None
 
 
 def do_deploy(archive_path):
