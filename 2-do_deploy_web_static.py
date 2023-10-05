@@ -47,13 +47,14 @@ def do_deploy(archive_path):
         # Uncompress the archive to the folder
         # /data/web_static/releases/<archive filename without extension> on
         # the web server
+        run(f'rm -f {archive_path}')
         run(f'mkdir -p /data/web_static/releases/{name}/')
         run(f'tar -xzf /tmp/{file_name} -C /data/web_static/releases/{name}/')
 
         # Delete the archive from the web server
         run(f'rm /tmp/{file_name}')
 
-        run(f' mv /data/web_static/releases/{name}'
+        run(f'mv /data/web_static/releases/{name}'
             f'/web_static/* '
             f'/data/web_static/releases/{name}/')
 

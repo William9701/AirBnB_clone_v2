@@ -52,7 +52,7 @@ def do_deploy(archive_path):
         # Delete the archive from the web server
         run(f'rm /tmp/{file_name}')
 
-        run(f' mv /data/web_static/releases/{name}'
+        run(f'mv /data/web_static/releases/{name}'
             f'/web_static/* '
             f'/data/web_static/releases/{name}/')
 
