@@ -7,7 +7,7 @@ import os
 
 from fabric.context_managers import settings
 
-env.hosts = ['<IP web-01>', '<IP web-02>']
+env.hosts = ['52.86.222.148', '3.85.41.223']
 
 
 def do_clean(number=0):
