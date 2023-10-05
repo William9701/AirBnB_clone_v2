@@ -6,10 +6,13 @@ from fabric.api import local, put, env, run, task
 from datetime import datetime
 import tarfile
 
+from fabric.decorators import runs_once
+
 env.hosts = ['52.86.222.148', '3.85.41.223']
 
 
 @task
+@runs_once
 def do_pack():
     """ method handles the packing up file"""
     name = (f"web_static_{datetime.now().year}{datetime.now().month}"
