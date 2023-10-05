@@ -1,3 +1,5 @@
+# 101-setup_web_static
+
 class web_static {
   $nginx_package_name = 'nginx'
   $web_static_dirs = ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']
