@@ -3,7 +3,7 @@
 
 # Install Nginx if it not already installed
 if ! dpkg -l | grep -q "nginx"; then
-    sudo apt-get install nginx
+    sudo apt-get -y install nginx
 fi
 
 # Create the folder /data/ if it doesn’t already exist
@@ -46,7 +46,7 @@ fi
 
 # Create a symbolic link /data/web_static/current linked to the /data/web_static/releases/test/ folder
 if [ -L "/data/web_static/current" ]; then
-  rm "/data/web_static/current"
+  rm -rf "/data/web_static/current"
 fi
 sudo ln -s "/data/web_static/releases/test/" "/data/web_static/current"
 
@@ -69,4 +69,4 @@ if ! grep -q "location /hbnb_static/ {" "$nginx_config_file"; then
 fi
 
 # Restart Nginx
-sudo systemctl restart nginx
+sudo service restart nginx
