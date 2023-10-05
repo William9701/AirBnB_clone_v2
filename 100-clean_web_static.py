@@ -1,32 +1,44 @@
 #!/usr/bin/python3
-"""This module handles packing up, distribution, and clean up"""
+"""Fabric script to clean up old archives"""
 
+from fabric.api import env, local, run
+from datetime import datetime
 import os
-from fabric.api import local, put, env, run
 
-env.hosts = ['xx-web-01', 'xx-web-02']
+from fabric.context_managers import settings
+
+env.hosts = ['52.86.222.148', '3.85.41.223']
 
 
 def do_clean(number=0):
-    """A method that cleans up out-of-date archives"""
-    number = int(number)
+    """
+    Delete old archives from versions and releases folders
+    """
+    try:
+        number = int(number)
+        if number < 1:
+            number = 1
 
-    # keep at least one version if number <= 1
-    if number <= 1:
-        number = 2
-    else:
-        number += 1
+        # Get the list of archives in versions folder
+        local_archives = local("ls -t versions", capture=True).split("\n")
+        if number < len(local_archives):
+            archives_to_delete = local_archives[number:]
+            for archive in archives_to_delete:
+                local("rm versions/{}".format(archive))
 
-    # Delete all unnecessary archives in the versions folder
-    local(
-        'ls -1t versions | tail -n +{} | xargs -I {} rm -- versions/{}'.format(
-            number, '{}'))
-
-    # Delete all unnecessary archives in the /data/web_static/releases
-    # folder of both web servers
-    run('ls -1t /data/web_static/releases | tail -n +{} | xargs -I {} rm -rf -- /data/web_static/releases/{}'.format(
-        number, '{}'))
+        # Get the list of archives in releases folder on each server
+        for host in env.hosts:
+            with settings(host_string=host):
+                server_archives = run("ls -t /data/web_static/releases").split("\n")
+                if number < len(server_archives):
+                    archives_to_delete = server_archives[number:]
+                    for archive in archives_to_delete:
+                        run("rm -rf /data/web_static/releases/{}".format(archive))
+    except ValueError:
+        print("Please provide a valid number for the archives to keep.")
 
 
 if __name__ == "__main__":
-    do_clean()
+    # Change the number to specify how many versions to keep (e.g.,
+    # 2 to keep two most recent)
+    do_clean(number=0)
