@@ -2,13 +2,14 @@
 """This module handles packing up and distribution"""
 
 import os
-from fabric.api import local, put, env, run
+from fabric.api import local, put, env, run, task
 from datetime import datetime
 import tarfile
 
 env.hosts = ['52.86.222.148', '3.85.41.223']
 
 
+@task
 def do_pack():
     """ method handles the packing up file"""
     name = (f"web_static_{datetime.now().year}{datetime.now().month}"
@@ -29,6 +30,7 @@ def do_pack():
         return None
 
 
+@task
 def do_deploy(archive_path):
     """A method that distributes an archive to the web servers"""
     if not os.path.exists(archive_path):

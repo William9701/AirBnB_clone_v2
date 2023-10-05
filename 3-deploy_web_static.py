@@ -3,11 +3,12 @@
 from datetime import datetime
 import tarfile
 import os
-from fabric.api import local, env, put, run
+from fabric.api import local, env, put, run, task
 
 env.hosts = ['52.86.222.148', '3.85.41.223']
 
 
+@task
 def do_pack():
     """ method handles the packing up file"""
     name = (f"web_static_{datetime.now().year}{datetime.now().month}"
@@ -28,6 +29,7 @@ def do_pack():
         return None
 
 
+@task
 def do_deploy(archive_path):
     """A method that distributes an archive to the web servers"""
     if not os.path.exists(archive_path):
@@ -72,6 +74,7 @@ def do_deploy(archive_path):
         return False
 
 
+@task
 def deploy():
     """ deploy to the main servers"""
     archive = do_pack()
