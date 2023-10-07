@@ -42,7 +42,6 @@ def do_deploy(archive_path):
     try:
         # Upload the archive to the /tmp/ directory of the web server
         put(archive_path, '/tmp/')
-
         # Extract the filename without extension
         file_name = os.path.basename(archive_path)
         name, ext = os.path.splitext(file_name)
@@ -77,8 +76,3 @@ def do_deploy(archive_path):
     except Exception as e:
         june = str(e)
         return False
-
-
-if __name__ == "__main__":
-    # if called then execte
-    do_deploy()
