@@ -1,52 +1,88 @@
-# 101-setup_web_static
+# Configures a brand new web server for deployment of web_static.
 
-class web_static {
-  $nginx_package_name = 'nginx'
-  $web_static_dirs = ['/data', '/data/web_static', '/data/web_static/releases', '/data/web_static/shared', '/data/web_static/releases/test']
-  $web_owner = 'ubuntu'
-  $web_group = 'ubuntu'
-  $nginx_config_file = '/etc/nginx/sites-available/default'
+# Nginx configuration file
+$nginx_conf = "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    add_header X-Served-By ${hostname};
+    root   /var/www/html;
+    index  index.html index.htm;
+    location /hbnb_static {
+        alias /data/web_static/current;
+        index index.html index.htm;
+    }
+    location /redirect_me {
+        return 301 http://github.com/akohinmiogbegbile/;
+    }
+    error_page 404 /404.html;
+    location /404 {
+      root /var/www/html;
+      internal;
+    }
+}"
 
-  package { $nginx_package_name:
-    ensure => installed,
-  }
+package { 'nginx':
+  ensure   => 'present',
+  provider => 'apt'
+} ->
 
-  file { $web_static_dirs:
-    ensure => directory,
-    owner  => $web_owner,
-    group  => $web_group,
-    mode   => '0755',
-  }
+file { '/data':
+  ensure  => 'directory'
+} ->
 
-  file { '/data/web_static/releases/test/index.html':
-    ensure  => file,
-    content => '<html><head></head><body>This is a test</body></html>',
-    owner   => $web_owner,
-    group   => $web_group,
-    mode    => '0644',
-  }
+file { '/data/web_static':
+  ensure => 'directory'
+} ->
 
-  file { '/data/web_static/current':
-    ensure => link,
-    target => '/data/web_static/releases/test',
-    force  => true,
-    owner  => $web_owner,
-    group  => $web_group,
-  }
+file { '/data/web_static/releases':
+  ensure => 'directory'
+} ->
 
-  exec { 'update_nginx_config':
-    command     => "sed -i 's|^\tlocation / {|\\tlocation /hbnb_static/ {\\n\\t\\talias /data/web_static/current/;\\n\\t}\\n\\n\\tlocation / {|' ${nginx_config_file}",
-    path        => ['/bin', '/usr/bin'],
-    refreshonly => true,
-    subscribe   => File['/data/web_static/current'],
-  }
+file { '/data/web_static/releases/test':
+  ensure => 'directory'
+} ->
 
-  service { 'nginx':
-    ensure     => running,
-    enable     => true,
-    subscribe  => Exec['update_nginx_config'],
-  }
+file { '/data/web_static/shared':
+  ensure => 'directory'
+} ->
+
+file { '/data/web_static/releases/test/index.html':
+  ensure  => 'present',
+  content => "Holberton School Puppet\n"
+} ->
+
+file { '/data/web_static/current':
+  ensure => 'link',
+  target => '/data/web_static/releases/test'
+} ->
+
+exec { 'chown -R ubuntu:ubuntu /data/':
+  path => '/usr/bin/:/usr/local/bin/:/bin/'
 }
 
-include web_static
+file { '/var/www':
+  ensure => 'directory'
+} ->
 
+file { '/var/www/html':
+  ensure => 'directory'
+} ->
+
+file { '/var/www/html/index.html':
+  ensure  => 'present',
+  content => "Holberton School Nginx\n"
+} ->
+
+file { '/var/www/html/404.html':
+  ensure  => 'present',
+  content => "Ceci n'est pas une page\n"
+} ->
+
+file { '/etc/nginx/sites-available/default':
+  ensure  => 'present',
+  content => $nginx_conf
+} ->
+
+exec { 'nginx restart':
+  path => '/etc/init.d/'
+}
