@@ -2,9 +2,10 @@
 """ This module handles packing up and distribution"""
 
 import os
-from fabric.api import local, put, env, run, task
+from fabric.api import local, put, env, task, run
 from datetime import datetime
 import tarfile
+from fabric import api
 
 from fabric.decorators import runs_once
 
@@ -42,6 +43,7 @@ def do_deploy(archive_path):
     try:
         # Upload the archive to the /tmp/ directory of the web server
         put(archive_path, '/tmp/')
+
         # Extract the filename without extension
         file_name = os.path.basename(archive_path)
         name, ext = os.path.splitext(file_name)
@@ -76,3 +78,4 @@ def do_deploy(archive_path):
     except Exception as e:
         june = str(e)
         return False
+

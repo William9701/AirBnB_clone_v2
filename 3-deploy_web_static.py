@@ -84,3 +84,8 @@ def deploy():
         return False
     value = do_deploy(archive)
     return value
+
+
+if __name__ == "__main__":
+    # if called then execute
+    deploy()

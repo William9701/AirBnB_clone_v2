@@ -71,6 +71,10 @@ class DBStorage:
             self.__session.delete(obj)
             self.__session.commit()
 
+    def close(self):
+        """Close the current SQLAlchemy Session"""
+        self.__session.close()
+
     def reload(self):
         # Create all tables in the database
         Base.metadata.create_all(self.__engine)

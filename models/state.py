@@ -25,3 +25,4 @@ if getenv("HBNB_TYPE_STORAGE") != "db":
             if city.state_id == self.id:
                 city_list.append(city)
         return city_list
+
