@@ -23,13 +23,17 @@ class BaseModel:
             for key, value in kwargs.items():
                 if key == "created_at" or key == "updated_at":
                     value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
-                    if key != "__class__":
-                        setattr(self, key, value)
+                if key == "name":
+                    setattr(self, key, value)
 
     def __str__(self):
         """Returns a string representation of the instance"""
         cls = (str(type(self)).split('.')[-1]).split('\'')[0]
-        return '[{}] ({}) {}'.format(cls, self.id, self.__dict__)
+        dict_copy = self.__dict__.copy()  # create a copy of the __dict__
+        if '_sa_instance_state' in dict_copy:
+            del dict_copy[
+                '_sa_instance_state']  # remove _sa_instance_state from the copy
+        return '[{}] ({}) {}'.format(cls, self.id, dict_copy)
 
     def save(self):
         """Updates updated_at with current time when instance is changed"""
@@ -48,6 +52,8 @@ class BaseModel:
         dictionary['updated_at'] = self.updated_at.isoformat()
         if '_sa_instance_state' in dictionary:
             del dictionary['_sa_instance_state']
+        if 'name' in self.__dict__:
+            dictionary['name'] = self.name
         return dictionary
 
     def delete(self):
